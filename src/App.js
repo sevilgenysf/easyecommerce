@@ -1,7 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {Text, StyleSheet, View, SafeAreaView} from 'react-native';
+import {Text, StyleSheet, View, SafeAreaView, LogBox} from 'react-native';
 import {ARROW_LEFT} from '@assets';
 import {Products} from '@pages';
+
+LogBox.ignoreAllLogs(true);
 
 const App = () => {
   return (

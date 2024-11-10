@@ -19,21 +19,14 @@ import {useMMKVObject, useMMKVString} from 'react-native-mmkv';
 // ];
 
 const SearchBar = ({data}) => {
-  const [search, setSearch] = useState('');
+  const [input, setInput] = useState('');
 
   const [filteredProduct, setFilteredProduct] =
-    useMMKVObject('filtered_products');
+    useMMKVString('filtered_products');
 
   const handleSearch = text => {
-    setSearch(text);
-    if (text) {
-      const newData = data.filter(item =>
-        item.toLowerCase().includes(text.toLowerCase()),
-      );
-      setFilteredProduct(newData);
-    } else {
-      data;
-    }
+    setInput(text);
+    data(text);
   };
 
   return (
@@ -41,13 +34,8 @@ const SearchBar = ({data}) => {
       <TextInput
         style={styles.searchBar}
         placeholder="Search..."
-        value={search}
-        onChangeText={text => handleSearch(text)}
-      />
-      <FlatList
-        data={filteredProduct}
-        keyExtractor={item => item}
-        renderItem={({item}) => <Text style={styles.item}>{item}</Text>}
+        value={input}
+        onChangeText={handleSearch}
       />
     </View>
   );
@@ -57,7 +45,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    marginBottom: 60,
   },
   searchBar: {
     height: 40,
@@ -66,7 +53,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     marginHorizontal: 20,
-    marginBottom: 20,
+    marginBottom: 10,
+    marginTop: 20,
   },
   item: {
     padding: 15,

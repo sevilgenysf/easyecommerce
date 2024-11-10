@@ -16,10 +16,6 @@ let {width} = Dimensions.get('window');
 const ProductCard = ({item}) => {
   const [filteredProduct] = useMMKVObject('filtered_products');
 
-  useEffect(() => {
-    console.log(filteredProduct);
-  }, []);
-
   return (
     <View style={styles.container}>
       <Image
@@ -36,10 +32,15 @@ const ProductCard = ({item}) => {
       <Text style={styles.price}>{item?.price}₺</Text>
 
       {item?.rating?.count > 0 ? (
-        <View style={{marginTop: 20}}>
+        <View style={{marginTop: 10}}>
           <TouchableOpacity
             onPress={() => alert('Button Pressed')}
-            style={{backgroundColor: 'green', padding: 10, borderRadius: 5}}>
+            style={{
+              backgroundColor: 'green',
+              padding: 10,
+              borderRadius: 5,
+              width: 60,
+            }}>
             <Text style={{color: 'white', textAlign: 'center'}}>Add</Text>
           </TouchableOpacity>
         </View>
@@ -54,14 +55,18 @@ const styles = StyleSheet.create({
   container: {
     display: 'flex',
     flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
     width: width / 2 - 20,
     height: width / 1.7,
-    padding: 10,
     borderRadius: 10,
+    elevation: 5,
     marginTop: 10,
     marginLeft: 10,
-    alignItems: 'center',
-    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
     backgroundColor: 'white',
   },
   image: {

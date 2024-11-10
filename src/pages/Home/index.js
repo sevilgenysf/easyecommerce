@@ -1,19 +1,35 @@
 /* eslint-disable react/react-in-jsx-scope */
 import axios from 'axios';
 import react, {useEffect, useState} from 'react';
-import {View, FlatList, StyleSheet, TextInput, Text} from 'react-native';
+import {
+  View,
+  FlatList,
+  StyleSheet,
+  TextInput,
+  Text,
+  ScrollView,
+} from 'react-native';
 import ProductList from './components/ProductList';
+import CategoryFilter from './components/CategoryFilter';
 
 import {TopHeader} from '@components';
 import {SearchBar} from '@components';
 import {useMMKVObject} from 'react-native-mmkv';
+import {Banner} from '@components';
 
 const Produtcs = () => {
   const [products, setProducts] = useState([]);
   const [filteredProduct] = useMMKVObject('filtered_products');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [active, setActive] = useState();
+  const [initialState, setInitialState] = useState([]);
+  const [productsCtg, setProductsCtg] = useState([]);
 
   // Tüm title değerlerini bir array'e pushlamak
-  const titlesArray = products.map(item => item.title);
+  const filteredProducts = products.filter(item =>
+    item.title.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
   const renderItem = ({item}) => {
     return (
@@ -22,6 +38,21 @@ const Produtcs = () => {
       </View>
     );
   };
+
+  useEffect(() => {
+    setProducts(products);
+    setCategories(categories);
+    setActive(-1);
+    setInitialState(products);
+
+    return () => {
+      setProducts([]);
+      setCategories([]);
+      setActive();
+      setInitialState();
+    };
+  }, []);
+
   useEffect(() => {
     axios
       .get(
@@ -38,27 +69,54 @@ const Produtcs = () => {
     };
   }, []);
 
+  // Categories
+
+  const changeCtg = ctg => {
+    {
+      ctg === 'all'
+        ? [setProductsCtg(initialState), setActive(true)]
+        : [
+            setProductsCtg(products.filter(i => i.category === ctg)),
+            setActive(true),
+          ];
+    }
+  };
+
   return (
-    <View>
-      <Text>{JSON.stringify(products.title, null, 2)}</Text>
-      <TopHeader />
-      <SearchBar data={titlesArray} />
-      <FlatList
-        numColumns={2}
-        vertical
-        showsVerticalScrollIndicator={false}
-        keyExtractor={(_, index) => index.toString()}
-        data={products}
-        renderItem={renderItem}
-      />
-    </View>
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <View>
+        <TopHeader />
+        <View>
+          <Banner />
+        </View>
+        <View>
+          <CategoryFilter
+            categories={products}
+            categoryFilter={changeCtg}
+            productsCtg={productsCtg}
+            active={active}
+            setActive={setActive}
+          />
+        </View>
+        <SearchBar data={setSearchTerm} />
+        <FlatList
+          numColumns={2}
+          vertical
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(_, index) => index.toString()}
+          data={filteredProducts}
+          renderItem={renderItem}
+          contentContainerStyle={{paddingBottom: 10}}
+          // ListHeaderComponent={<HeaderComponent />}
+        />
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50,
     backgroundColor: '#fff',
   },
   searchBar: {
